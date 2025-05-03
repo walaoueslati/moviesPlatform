@@ -1,0 +1,9 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+    <h2>Êtes-vous sûr de vouloir supprimer le film : {{ movie.title }} ?</h2>
+    <form method="POST" >
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+    </form>
+{% endblock %}

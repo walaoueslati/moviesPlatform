@@ -1,0 +1,23 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<h2 class="text-success">Liste des films</h2>
+<a href="{% url 'add_movie' %}" class="btn btn-success mb-4">Ajouter un film</a>
+
+<div class="row">
+    {% for movie in movies %}
+    <div class="col-md-4 mb-4">
+        <div class="card" style="background-color: #343a40; color: #e0e0e0; border: none;">
+            <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="card-img-top" style="height: 300px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title text-success">{{ movie.title }}</h5>
+                <p class="card-text">{{ movie.description }}</p>
+                <a href="{% url 'movie_detail' movie.id %}" class="btn btn-outline-success btn-sm">Voir détails</a>
+                <a href="{% url 'edit_movie' movie.id %}" class="btn btn-outline-warning btn-sm">Éditer</a>
+                <a href="{% url 'delete_movie' movie.id %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
