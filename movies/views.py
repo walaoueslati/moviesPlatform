@@ -5,9 +5,10 @@ from django.db.models import Avg
 from .forms import MovieForm
 from django.contrib.auth.decorators import login_required
 
+
 def home(request):
     return render(request, 'movies/home.html')
-
+@login_required
 def movie_list(request):
     movies = Movie.objects.all()
     return render(request, 'movies/movie_list.html', {'movies': movies})
@@ -120,3 +121,56 @@ def delete_review(request, review_id):
         return redirect('movie_detail', movie_id=review.movie.id)
 
     return render(request, 'movies/delete_review.html', {'review': review})
+
+
+
+
+from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from .forms import RegistrationForm
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return render(request, "movies/register.html", {"message": "You are already logged in. Please log out to register a new account."})
+    
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+
+            login(request, user)
+
+            return redirect("movies:home")
+    else:
+        form = RegistrationForm()
+
+    return render(request, "movies/register.html", {"form": form})
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+
+        if user is not None and user.is_active:
+            login(request, user)
+            return redirect('home')  
+        else:
+            return render(request, 'movies/login.html', {"error": "Identifiant ou mot de passe invalide."})
+
+    return render(request, 'movies/login.html')
+
+def logout_user(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect("movies:login") 
+    else:
+        return redirect("movies:login")
